@@ -1,23 +1,47 @@
-import logo from './logo.svg';
+import { useState } from 'react';
+import Column from './components/Column/Column.jsx';
 import './App.css';
 
 function App() {
+
+  const columns = ["To Do", "In Progress", "On Hold", "Completed"]
+  const [tasks, setTasks] = useState({
+    "To Do:": [],
+    "In Progress": [],
+    "On Hold": [],
+    "Completed": [],
+  });
+
+  const addTask = (column, task) => {
+    setTasks((prevTasks) => ({
+      ...prevTasks,
+      [column]: [...(prevTasks[column] || []), task],
+    }));
+  };
+
+  const deleteTask = (column, index) => {
+    setTasks((prevTasks) => ({
+      ...prevTasks,
+      [column]: prevTasks[column].filter((_, i) => i !== index),
+    }));
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Welcome to YouKanBan!</h1>
+      <h2>This is your productivity app dream come true</h2>
+      <h2>Today's Tasks</h2>
+      <div className="column-container">
+        {columns.map((column) => (
+          <Column
+            key={column}
+            title={column}
+            tasks={tasks[column]}
+            onAddTask={(task) => addTask(column, task)}
+            onDeleteTask={(index) => deleteTask(column, index)}
+          />
+        ))}
+      </div>
     </div>
   );
 }

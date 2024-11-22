@@ -1,0 +1,5 @@
+.column {
+  display: list-item;
+  border-radius: 10px;
+  background-color: #444;
+}
