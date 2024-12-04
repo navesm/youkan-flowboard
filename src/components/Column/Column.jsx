@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Task from '../Task/Task.jsx';
+import './Column.css';
 
 function Column({ title, tasks = [], onAddTask, onDeleteTask }) {
   const [taskInput, setTaskInput] = useState('');
@@ -16,11 +17,14 @@ function Column({ title, tasks = [], onAddTask, onDeleteTask }) {
 
   return (
     <div className="column">
-      <h2>{title}</h2>
+      <div className={`column-header ${title.toLowerCase().replace(" ", "-")}`}>
+        <h2>{title}</h2>
+      </div>
       <div className="tasks">
         {tasks.length > 0 ? (
           tasks.map((task, index) => (
             <Task
+              className="task"
               key={index}
               content={task}
               onDelete={() => onDeleteTask(index)}
@@ -37,7 +41,7 @@ function Column({ title, tasks = [], onAddTask, onDeleteTask }) {
         value={taskInput}
         onChange={handleInputChange}
       />
-      <button onClick={(handleAddTask)}>Add Task</button>
+      <button className="add-task-button" onClick={(handleAddTask)}>Add Task</button>
     </div>
   )
 }

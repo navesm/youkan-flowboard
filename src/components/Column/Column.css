@@ -1,5 +1,107 @@
-.column {
+/* .column {
   display: list-item;
   border-radius: 10px;
   background-color: #444;
+} */
+
+/* Column Container is styled in App.css */
+
+/* Individual Column */
+.column {
+  flex: 1 1 20%;
+  min-width: 250px;
+  max-width: 300px;
+  background-color: #ffffff;
+  border: 2px solid #ccc;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  /* Prevent content from spilling */
+  padding: 10px;
+}
+
+/* Column Header */
+.column-header {
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+  padding: 10px;
+  color: white;
+}
+
+/* Header Colors */
+.column-header.to-do {
+  background-color: #6a994e;
+}
+
+.column-header.in-progress {
+  background-color: #f4a261;
+}
+
+.column-header.on-hold {
+  background-color: #e76f51;
+}
+
+.column-header.completed {
+  background-color: #2a9d8f;
+}
+
+/* Task Input and Button */
+.task-input {
+  width: 90%;
+  padding: 8px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.add-task-button {
+  padding: 8px 15px;
+  background-color: #2d6a4f;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.add-task-button:hover {
+  background-color: #40916c;
+}
+
+/* Task List */
+.tasks {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0;
+}
+
+/* Individual Task */
+.task {
+  padding: 8px;
+  margin: 5px 0;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  position: relative;
+}
+
+/* Delete Button */
+.delete-button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background-color: #e63946;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.delete-button:hover {
+  background-color: #d62828;
 }

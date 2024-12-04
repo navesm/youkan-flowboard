@@ -1,5 +1,5 @@
 body {
-	background: linear-gradient(135deg, #a78b71, #c9b79c, #d6cfc5, #9fb59e, #7b8f79);
+	/* background: linear-gradient(135deg, #a78b71, #c9b79c, #d6cfc5, #9fb59e, #7b8f79);
 	background-repeat: no-repeat;
 	background-attachment: fixed;
 	/* Keeps the gradient stationary on scroll */
@@ -16,8 +16,23 @@ body {
 	justify-content: space-around;
 	gap: 2rem;
 	padding: 2rem;
+	font-family: Arial, sans-serif;
+	text-align: center;
+	background: linear-gradient(to bottom, #e9f5db, #b7d);
+	min-height: 100vh;
+	padding: 20px;
 }
 
-h1 {
+.title {
+	font-size: 2.5rem;
 	color: rebeccapurple;
+	margin-bottom: 10px;
+}
+
+.column-container {
+	display: flex;
+	justify-content: space-around;
+	flex-wrap: wrap;
+	gap: 20px;
+	padding: 20px;
 }

@@ -6,7 +6,7 @@ function App() {
 
   const columns = ["To Do", "In Progress", "On Hold", "Completed"]
   const [tasks, setTasks] = useState({
-    "To Do:": [],
+    "To Do": [],
     "In Progress": [],
     "On Hold": [],
     "Completed": [],
@@ -28,7 +28,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Welcome to YouKanBan!</h1>
+      <h1 className="title">Welcome to YouKanBan!</h1>
       <h2>This is your productivity app dream come true</h2>
       <h2>Today's Tasks</h2>
       <div className="column-container">
