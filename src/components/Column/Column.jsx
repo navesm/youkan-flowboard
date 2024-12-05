@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Task from '../Task/Task.jsx';
 import './Column.css';
 
-function Column({ title, tasks = [], onAddTask, onDeleteTask }) {
+function Column({ title, tasks = [], onAddTask, onDeleteTask, onClearTasks }) {
   const [taskInput, setTaskInput] = useState('');
 
   const handleInputChange = (e) => {
@@ -14,6 +14,7 @@ function Column({ title, tasks = [], onAddTask, onDeleteTask }) {
     onAddTask(taskInput);
     setTaskInput("");
   };
+
 
   return (
     <div className="column">
@@ -42,8 +43,13 @@ function Column({ title, tasks = [], onAddTask, onDeleteTask }) {
         onChange={handleInputChange}
       />
       <button className="add-task-button" onClick={(handleAddTask)}>Add Task</button>
+      {title === "Completed" && tasks.length > 0 && (
+        <button className="clear-tasks-button" onClick={onClearTasks}>
+          Clear Tasks
+        </button>
+      )}
     </div>
-  )
+  );
 }
 
 export default Column;

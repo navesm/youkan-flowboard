@@ -26,11 +26,20 @@ function App() {
     }));
   };
 
+
+  const clearTasks = (column) => {
+    setTasks(() => ({
+      [column]: [],
+    }));
+  };
+
   return (
     <div className="App">
-      <h1 className="title">Welcome to YouKanBan!</h1>
-      <h2>This is your productivity app dream come true</h2>
-      <h2>Today's Tasks</h2>
+      <div className="header-container">
+        <h1 className="title">Welcome to YouKanBan!</h1>
+        <h2>This is your productivity app dream come true</h2>
+        <h2>Today's Tasks</h2>
+      </div>
       <div className="column-container">
         {columns.map((column) => (
           <Column
@@ -39,6 +48,7 @@ function App() {
             tasks={tasks[column]}
             onAddTask={(task) => addTask(column, task)}
             onDeleteTask={(index) => deleteTask(column, index)}
+            onClearTasks={() => clearTasks(column)}
           />
         ))}
       </div>
