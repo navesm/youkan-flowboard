@@ -121,3 +121,9 @@
 .clear-tasks-button:hover {
   background-color: #d62828;
 }
+
+.droppable-area {
+  min-height: 100px;
+  padding: 8px;
+  flex-grow: 1;
+}

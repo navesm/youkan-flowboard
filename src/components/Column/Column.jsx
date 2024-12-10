@@ -1,9 +1,14 @@
 import React, { useState } from 'react';
-import Task from '../Task/Task.jsx';
+import SortableTask from '../Task/Task.jsx';
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { useDroppable } from '@dnd-kit/core';
 import './Column.css';
 
 function Column({ title, tasks = [], onAddTask, onDeleteTask, onClearTasks }) {
   const [taskInput, setTaskInput] = useState('');
+  const { setNodeRef } = useDroppable({
+    id: `${title}|droppable`
+  })
 
   const handleInputChange = (e) => {
     setTaskInput(e.target.value);
@@ -15,25 +20,39 @@ function Column({ title, tasks = [], onAddTask, onDeleteTask, onClearTasks }) {
     setTaskInput("");
   };
 
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleAddTask();
+    }
+  };
+
+  const sortableItems = tasks.map(task => `${title}|${task.id}`);
+
+
 
   return (
     <div className="column">
       <div className={`column-header ${title.toLowerCase().replace(" ", "-")}`}>
         <h2>{title}</h2>
       </div>
-      <div className="tasks">
-        {tasks.length > 0 ? (
-          tasks.map((task, index) => (
-            <Task
-              className="task"
-              key={index}
-              content={task}
-              onDelete={() => onDeleteTask(index)}
-            />
-          ))
-        ) : (
-          <p>No Tasks yet!</p>
-        )}
+      <div ref={setNodeRef} className="droppable-area">
+        <SortableContext items={sortableItems} strategy={verticalListSortingStrategy}>
+          <div className="tasks">
+            {tasks.length > 0 ? (
+              tasks.map((task) => (
+                <SortableTask
+                  className="task"
+                  key={`${title}|${task.id}`}
+                  id={`${title}|${task.id}`}
+                  content={task.content}
+                  onDelete={() => onDeleteTask(task.id)}
+                />
+              ))
+            ) : (
+              <p>No Tasks yet!</p>
+            )}
+          </div>
+        </SortableContext>
       </div>
       <input
         type="text"
@@ -41,14 +60,17 @@ function Column({ title, tasks = [], onAddTask, onDeleteTask, onClearTasks }) {
         className="task-input"
         value={taskInput}
         onChange={handleInputChange}
+        onKeyDown={handleKeyPress}
       />
       <button className="add-task-button" onClick={(handleAddTask)}>Add Task</button>
-      {title === "Completed" && tasks.length > 0 && (
-        <button className="clear-tasks-button" onClick={onClearTasks}>
-          Clear Tasks
-        </button>
-      )}
-    </div>
+      {
+        title === "Completed" && tasks.length > 0 && (
+          <button className="clear-tasks-button" onClick={onClearTasks}>
+            Clear Tasks
+          </button>
+        )
+      }
+    </div >
   );
 }
 
