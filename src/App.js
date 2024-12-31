@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
 import Column from './components/Column/Column.jsx';
 import SignUp from './components/SignUp/SignUp.jsx';
@@ -20,9 +20,9 @@ function App() {
   const [activeTask, setActiveTask] = useState(null);
 
 
-  const columns = ["To Do", "In Progress", "On Hold", "Completed"]
+  const columns = useMemo(() => ["To Do", "In Progress", "On Hold", "Completed"], []);
 
-
+  // Auth Effect
   useEffect(() => {
     // Check session and get user data
     const fetchUserData = async () => {
@@ -31,11 +31,9 @@ function App() {
         setUser(session.user);
 
         //Fetch user metadata
-        const { data, error } = await supabase.auth.getUser();
+        const { data } = await supabase.auth.getUser();
         if (data?.user) {
           setDisplayName(data.user.user_metadata?.displayName || 'User');
-        } else if (error) {
-          console.error(error.message);
         }
       }
     };
@@ -43,17 +41,15 @@ function App() {
     fetchUserData();
 
     // Listen for authentication state changes
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: listener } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (session?.user) {
         setUser(session.user);
 
         // Fetch user metadata
         const fetchUserMetaData = async () => {
-          const { data, error } = await supabase.auth.getUser();
+          const { data } = await supabase.auth.getUser();
           if (data?.user) {
             setDisplayName(data.user.user_metadata?.displayName || 'User');
-          } else if (error) {
-            console.error(error.message);
           }
         };
 
@@ -88,7 +84,7 @@ function App() {
   }
 
 
-  const handleDragEnd = (event) => {
+  const handleDragEnd = async (event) => {
     setActiveTask(null);
     const { active, over } = event;
     if (!active || !over) return;
@@ -129,35 +125,119 @@ function App() {
         [destinationColumn]: destinationColumnTasks,
       }));
     }
+
+    // Persist to Supabase
+    if (user) {
+      const { error } = await supabase
+        .from('tasks')
+        .update({ column: destinationColumn })
+        .eq('id', active.id)
+        .eq('user_id', user.id);
+
+      if (error) console.error('Error updating task:', error.message);
+    }
   };
 
 
+  const fetchTasks = useCallback(async () => {
+    if (!user) return; // Skip if no user
 
-  const addTask = (column, taskContent) => {
+    const { data, error } = await supabase
+      .from('tasks')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('position', { ascending: true }); // Sort by position
+
+    if (error) {
+      console.error('Error fetching tasks:', error.message);
+      return;
+    }
+
+    //Organize tasks by column
+    const tasksByColumn = columns.reduce((acc, column) => {
+      acc[column] = data.filter((task) => task.column === column);
+      return acc;
+    }, {});
+
+    setTasks(tasksByColumn);
+  }, [user, columns]);
+
+  // Fetch tasks effect
+  useEffect(() => {
+    if (user) fetchTasks();
+  }, [user, fetchTasks]);
+
+  useEffect(() => {
+  }, [tasks]);
+
+
+  const addTask = async (column, taskContent) => {
     const newTask = {
       id: Date.now(),
-      content: taskContent
+      content: taskContent,
+      position: tasks[column].length,
+      column
     };
 
+    // Update local state first
     setTasks((prevTasks) => ({
       ...prevTasks,
       [column]: [...prevTasks[column], newTask]
     }));
+
+    //Persist to Supabase if user is authenticated
+    if (user) {
+      const { error } = await supabase
+        .from('tasks')
+        .insert({
+          column,
+          content: taskContent,
+          user_id: user.id,
+          position: newTask.position
+        });
+
+      if (error) console.error('Error adding task:', error.message);
+    }
   };
 
-  const deleteTask = (column, taskId) => {
+  const deleteTask = async (column, taskId) => {
     setTasks((prevTasks) => ({
       ...prevTasks,
       [column]: prevTasks[column].filter((task) => task.id !== taskId),
     }));
+
+    // Persist to Supabase if user is authenticated
+    if (user) {
+      const { error } = await supabase
+        .from('tasks')
+        .delete()
+        .eq('id', taskId)
+        .eq('user_id', user.id);
+
+      if (error) console.error('Error deleting task:', error.message);
+    }
   };
 
 
-  const clearTasks = (column) => {
+  const clearTasks = async (column) => {
     setTasks((prev) => ({
       ...prev,
       [column]: [],
     }));
+
+
+    // If user is authenticated, also clear from Supabase
+    if (user) {
+      const { error } = await supabase
+        .from('tasks')
+        .delete()
+        .eq('column', column)
+        .eq('user_id', user.id);
+
+      if (error) {
+        console.error('Error clearing tasks from Supabase:', error.message);
+      }
+    }
   };
 
   const TaskOverlay = ({ content }) => {
